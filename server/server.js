@@ -1,30 +1,10 @@
 const _ = require('lodash');
 var express = require('express');
 var bodyParser = require('body-parser');
-var {
-  ObjectID
-} = require('mongodb');
-var {
-  mongoose
-} = require('./db/mongoose');
-var {
-  Order
-} = require('./model/order');
-
-// var order = new Order({
-//   orderDetails:[
-//     {
-//       unitPrice:10,
-//       quantity:20,
-//       discount:30
-//     }
-//   ]
-// });
-//
-// order.save().then((doc) => {
-//   console.log(JSON.stringify(doc,undefined,2));
-// });
-
+var {ObjectID}= require('mongodb');
+var {mongoose} = require('./db/mongoose');
+var {Order} = require('./model/order');
+const port = Process.env.PORTS || 3000;
 var app = express();
 
 app.use(bodyParser.json());
@@ -39,7 +19,7 @@ app.post('/order', (req, res) => {
   });
 });
 
-app.get('/order',(req,res) => {
+app.get('/order', (req, res) => {
   Order.find().then((orders) => {
     res.send({orders});
   }).catch((e) => {
@@ -47,30 +27,40 @@ app.get('/order',(req,res) => {
   });
 });
 
-app.get('/order/:id',(req,res) => {
+app.get('/order/:id', (req, res) => {
   var id = req.params.id;
-  if(!ObjectID.isValid(id)){
+  if (!ObjectID.isValid(id)) {
     return res.status(404).send();
   }
   Order.findById(id).then((order) => {
-    if(!order)
-    {
+    if (!order) {
       return res.status(404).send();
     }
     res.send({order});
   });
 });
 
-app.put('/order/:id',(req,res) => {
+//PUT replaces a doc with a new one , PATCH updates an existing field in an existing doc
+
+app.put('/order/:id', (req, res) => {
   var id = req.params.id;
-  if(!ObjectID.isValid(id)){
+  if (!ObjectID.isValid(id)) {
     return res.status(404).send();
   }
-  var body = _.pick(req.body,['freight','shipVia','shipCity','shipRegion','shipAddress','shipPostalCode','shipPostalCode','shipCountry']);
-  console.log(JSON.stringify(req.body,undefined,2));
-  Order.findByIdAndUpdate(id,{$set:body},{new:true}).then((order) => {
-    if(!order)
-    {
+  var body = _.pick(req.body, [
+    'freight',
+    'shipVia',
+    'shipCity',
+    'shipRegion',
+    'shipAddress',
+    'shipPostalCode',
+    'shipPostalCode',
+    'shipCountry'
+  ]);
+  Order.findByIdAndUpdate(id, {
+    $set: body
+  }, {new: true}).then((order) => {
+    if (!order) {
       return res.status(404).send();
     }
     res.send({order});
