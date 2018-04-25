@@ -4,7 +4,7 @@ var bodyParser = require('body-parser');
 var {ObjectID}= require('mongodb');
 var {mongoose} = require('./db/mongoose');
 var {Order} = require('./model/order');
-const port = Process.env.PORTS || 3000;
+const port = Process.env.PORT || 3000;
 var app = express();
 
 app.use(bodyParser.json());
@@ -67,6 +67,6 @@ app.put('/order/:id', (req, res) => {
   });
 });
 
-app.listen(3000, () => {
-  console.log('Listening on 3000');
-})
+app.listen(port, () => {
+  console.log(`Started on port ${port}`);
+});
